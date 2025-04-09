@@ -12,11 +12,9 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Проверка на пустые поля
     if (username && email && password) {
       console.log("Отправляем данные:", { username, email, password });
 
-      // Отправляем данные на бэкэнд для регистрации
       try {
         const response = await fetch("http://localhost:5000/api/auth/register", {
           method: "POST",
@@ -28,13 +26,12 @@ export default function RegisterPage() {
 
         const data = await response.json();
 
-        // Если регистрация успешна
         if (response.ok) {
           console.log("Регистрация прошла успешно:", data);
-          navigate("/login"); // Перенаправляем на страницу входа
+          navigate("/login"); 
         } else {
           console.error("Ошибка регистрации:", data.message);
-          alert(data.message); // Показ ошибки
+          alert(data.message); 
         }
       } catch (error) {
         console.error("Ошибка при отправке запроса:", error);

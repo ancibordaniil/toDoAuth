@@ -10,11 +10,10 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     if (email && password) {
       console.log("Отправляем данные:", { email, password });
-
-      // Отправляем запрос на бэкэнд для авторизации
+  
       try {
         const response = await fetch("http://localhost:5000/api/auth/login", {
           method: "POST",
@@ -23,26 +22,34 @@ export default function LoginPage() {
           },
           body: JSON.stringify({ email, password }),
         });
-        console.log(response)
-
+  
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || `Ошибка HTTP: ${response.status}`);
+        }
+  
         const data = await response.json();
-
-        // Проверка успешного входа
-        if (response.ok) {
-          // Сохраняем токен в localStorage или context (если нужно)
+        
+        if (!data) {
+          throw new Error('Пустой ответ от сервера');
+        }
+  
+        if (data.token) {
           localStorage.setItem("token", data.token);
-
           console.log("Успешный вход:", data);
-
-          // Перенаправляем на главную страницу
           navigate("/");
         } else {
-          console.error("Ошибка входа:", data.message);
-          alert(data.message); // Выводим ошибку
+          console.error("Ошибка входа: отсутствует токен");
+          alert(data.message || "Ошибка входа");
         }
       } catch (error) {
         console.error("Ошибка при отправке запроса:", error);
-        alert("Ошибка соединения с сервером");
+        
+        if (error instanceof Error) {
+          alert(error.message);
+        } else {
+          alert("Произошла неизвестная ошибка");
+        }
       }
     }
   };

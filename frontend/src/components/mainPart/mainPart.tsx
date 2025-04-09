@@ -1,7 +1,6 @@
 // components/MainPart/MainPart.tsx
 import { useState } from "react";
 import styles from "./MainPart.module.scss";
-
 interface Todo {
   id: number;
   text: string;
