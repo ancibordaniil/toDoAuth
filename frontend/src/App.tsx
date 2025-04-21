@@ -4,6 +4,7 @@ import Header from "./components/Header/Header";
 import MainPart from "./components/mainPart/mainPart";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </>
   );

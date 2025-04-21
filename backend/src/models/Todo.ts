@@ -1,16 +1,20 @@
 import { Schema, model } from "mongoose";
 
 interface ITodo {
-  title: string;
-  completed: boolean;
+    userId: { type: Schema.Types.ObjectId; ref: "User"; required: true };
+    title: string;
+    completed: boolean;
 }
 
 const todoSchema = new Schema<ITodo>(
-  {
-    title: { type: String, required: true },
-    completed: { type: Boolean, default: false },
-  },
-  { timestamps: true }
+    {
+        userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+        title: { type: String, required: true },
+        completed: { type: Boolean, default: false },
+    },
+    { timestamps: true }
 );
 
-export default model<ITodo>("Todo", todoSchema);
+const Todo = model<ITodo>("Todo", todoSchema);
+
+export default Todo;

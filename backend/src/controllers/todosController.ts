@@ -1,63 +1,34 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import Todo from "../models/Todo";
 
-export const getTodos = async (
-  _req: Request,
-  res: Response,
-  _next: NextFunction
-): Promise<void> => {
-  const todos = await Todo.find();
+export const getTodos = async (req: Request, res: Response) => {
+  const userId = (req as any).userId;
+  const todos = await Todo.find({ userId });
   res.json(todos);
 };
 
-interface AddTodoBody {
-  title: string;
-}
-
-export const addTodo = async (
-  req: Request<{}, {}, AddTodoBody>,
-  res: Response,
-  _next: NextFunction
-): Promise<void> => {
+export const createTodo = async (req: Request, res: Response) => {
+  const userId = (req as any).userId;
   const { title } = req.body;
-  if (!title) {
-    res.status(400).json({ error: "Title is required" });
-    return;
-  }
 
-  const newTodo = new Todo({ title });
-  await newTodo.save();
+  const newTodo = await new Todo({ userId, title, completed: false }).save();
   res.status(201).json(newTodo);
 };
 
-interface TodoParams {
-  id: string;
-}
-
-export const deleteTodo = async (
-  req: Request<TodoParams>,
-  res: Response,
-  _next: NextFunction
-): Promise<void> => {
-  const { id } = req.params;
-  await Todo.findByIdAndDelete(id);
-  res.status(204).end();
-};
-
-export const toggleTodo = async (
-  req: Request<TodoParams>,
-  res: Response,
-  _next: NextFunction
-): Promise<void> => {
-  const { id } = req.params;
-  const todo = await Todo.findById(id);
-
-  if (!todo) {
-    res.status(404).json({ error: "Todo not found" });
-    return;
-  }
-
-  todo.completed = !todo.completed;
-  await todo.save();
-  res.json(todo);
-};
+export const deleteTodo = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = (req as any).userId;
+      const todoId = req.params.id;
+  
+      const deleted = await Todo.findOneAndDelete({ _id: todoId, userId });
+      if (!deleted) {
+        res.status(404).json({ message: "Задача не найдена" });
+        return;
+      }
+  
+      res.status(200).json({ message: "Задача удалена" });
+    } catch (error) {
+      res.status(500).json({ message: "Ошибка при удалении" });
+    }
+  };
+  

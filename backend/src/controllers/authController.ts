@@ -2,11 +2,48 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
 
-export const registerUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+// Получить профиль
+export const getProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const userId = (req as any).userId; // Получаем userId из JWT payload
+    const user = await User.findById(userId).select("username email"); // Получаем только username и email
+    if (!user) {
+      res.status(404).json({ message: "Профиль не найден" });
+      return;
+    }
+    res.json({ username: user.username, email: user.email });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Обновить профиль
+export const updateProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { username, email } = req.body;
+
+  try {
+    const userId = (req as any).userId; // Получаем userId из JWT payload
+    const user = await User.findById(userId); // Ищем пользователя по ID
+
+    if (!user) {
+      res.status(404).json({ message: "Профиль не найден" });
+      return;
+    }
+
+    // Обновляем поля
+    if (username) user.username = username;
+    if (email) user.email = email;
+
+    await user.save(); // Сохраняем изменения
+
+    res.json({ username: user.username, email: user.email });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Регистрировать пользователя
+export const registerUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { username, email, password } = req.body;
 
   try {
@@ -25,11 +62,8 @@ export const registerUser = async (
   }
 };
 
-export const loginUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+// Войти в систему
+export const loginUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { email, password } = req.body;
 
   if (!email || !password) {
