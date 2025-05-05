@@ -1,13 +1,11 @@
 // components/Header/Header.tsx
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../app/store"; 
-import { logout } from "../../features/auth/authSlice"; 
 import { Link, useLocation } from "react-router-dom";
 import styles from "./Header.module.scss";
 
 export default function Header() {
   const location = useLocation();
-  const dispatch = useDispatch();
   
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
@@ -47,14 +45,6 @@ export default function Header() {
             >
               Личный кабинет
             </Link>
-            <button
-              onClick={() => {
-                dispatch(logout());
-                localStorage.removeItem("token"); 
-              }}
-            >
-              Выйти
-            </button>
           </>
         )}
       </nav>

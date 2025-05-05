@@ -2,14 +2,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { login } from "../../features/auth/authSlice"; // Путь к твоему authSlice
+import { login } from "../../features/auth/authSlice"; 
 import styles from "./LoginPage.module.scss";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Хук для диспатча действий
+  const dispatch = useDispatch(); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,13 +38,12 @@ export default function LoginPage() {
         }
 
         if (data.token) {
-          localStorage.setItem("token", data.token);
+          localStorage.setItem("token", data.token);         
 
-          // Диспатчим действие login в Redux
           dispatch(login(data.token));
 
           console.log("Успешный вход:", data);
-          navigate("/profile"); // Переход в личный кабинет
+          navigate("/profile"); 
         } else {
           console.error("Ошибка входа: отсутствует токен");
           alert(data.message || "Ошибка входа");
